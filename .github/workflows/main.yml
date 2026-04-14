@@ -10,18 +10,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 第一步：先从 Gitee 拉取代码
+      # 第一步：从 Gitee 拉取代码
       - name: Checkout code from Gitee
         uses: actions/checkout@v4
         with:
-          repository: 'jingyisi/jingyisi-my-project' # Gitee 仓库名
-          token: ${{ secrets.GITEE_TOKEN }}          # 使用 Gitee 的 Token
-          fetch-depth: 0                             # 获取所有历史记录
+          repository: 'jingyisi/jingyisi-my-project' # 替换为你的 Gitee 用户名/仓库名
+          token: ${{ secrets.GITEE_TOKEN }}          # 确保你在 Settings -> Secrets 里配置了这个
+          fetch-depth: 0                             # 获取所有历史记录，这对同步很重要
 
       # 第二步：将代码推送到 GitHub
       - name: Push to GitHub
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}  # 使用 GitHub 内置的 Token
-          branch: 'main'                             # 推送到 main 分支
-          force: true                                # 强制推送，确保同步
+          github_token: ${{ secrets.GITHUB_TOKEN }}  # GitHub 自动提供的 Token，无需手动配置
+          branch: 'main'                             # 如果你的主分支是 master，请改为 master
+          force: true                                # 强制推送，确保两边完全一致
