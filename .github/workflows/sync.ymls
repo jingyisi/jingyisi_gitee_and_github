@@ -1,40 +1,33 @@
 name: Sync to Gitee
 
-# 触发条件：每当有人向 GitHub 的主分支推送代码时，自动触发
-on:
+# 触发条件：当代码推送到 main 分支时自动运行
+on: 
   push:
     branches:
-      - main   # 如果你的默认分支是 master，请把这里改成 master
+      - main 
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     
     steps:
-      # 第一步：拉取 GitHub 的代码
-      - name: Checkout Repository
+      # 第一步：拉取代码
+      - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0 # 获取所有历史记录，确保同步完整
+          fetch-depth: 0 
+          # 这里引用了你刚才在 Secrets 里设置的私钥变量名
+          ssh-key: ${{ secrets.GITEE_PRIVATE_KEY }}
 
-      # 第二步：配置 SSH 密钥（把你在 Secrets 里存的密钥用起来）
-      - name: Setup SSH Keys
-        uses: webfactory/ssh-agent@v0.5.4
-        with:
-          ssh-private-key: ${{ secrets.GITEE_PRIVATE_KEY }}
-
-      # 第三步：设置 Git 用户信息
-      - name: Setup Git Config
+      # 第二步：配置提交信息
+      - name: Configure Git
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "jingyisi"
+          git config --global user.email "18296837309@163.com"
 
-      # 第四步：执行同步推送到 Gitee
+      # 第三步：推送到 Gitee
       - name: Push to Gitee
         run: |
-          # 这里的地址换成你刚才确认过的 Gitee SSH 地址
+          # 这里使用的是 Gitee 的 SSH 地址
           git remote add gitee git@gitee.com:jingyisi/jingyisi-my-project.git
-          
-          # 强制推送到 Gitee 的 main 分支
-          # 如果你的 Gitee 分支叫 master，请把下面的 main 改成 master
-          git push -f gitee main
+          git push gitee main
