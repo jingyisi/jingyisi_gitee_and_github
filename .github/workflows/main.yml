@@ -10,17 +10,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout GitHub Repo
-        uses: actions/checkout@v3
+      # 第一步：先从 Gitee 拉取代码
+      - name: Checkout code from Gitee
+        uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: 'jingyisi/jingyisi-my-project' # Gitee 仓库名
+          token: ${{ secrets.GITEE_TOKEN }}          # 使用 Gitee 的 Token
+          fetch-depth: 0                             # 获取所有历史记录
 
-      - name: Sync from Gitee
-        uses: wearerequired/git-mirror-action@master
-        env:
-          # 密钥在这里定义即可，Action 会自动读取
-          SSH_PRIVATE_KEY: ${{ secrets.GITEE_TOKEN }}
+      # 第二步：将代码推送到 GitHub
+      - name: Push to GitHub
+        uses: ad-m/github-push-action@master
         with:
-          # 只需要配置源仓库和目标仓库地址
-          source-repo: 'git@gitee.com:jingyisi/jingyisi-my-project.git'
-          destination-repo: 'git@github.com:jingyisi/jingyisi_gitee_and_github.git' 
+          github_token: ${{ secrets.GITHUB_TOKEN }}  # 使用 GitHub 内置的 Token
+          branch: 'main'                             # 推送到 main 分支
+          force: true                                # 强制推送，确保同步
