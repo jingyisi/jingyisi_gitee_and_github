@@ -23,4 +23,4 @@ jobs:
         with:
           # 只需要配置源仓库和目标仓库地址
           source-repo: 'git@gitee.com:jingyisi/jingyisi-my-project.git'
-          destination-repo: 'git@github.com:jingyisi/jingyisi_gitee_and_github.git'
+          destination-repo: 'git@github.com:jingyisi/jingyisi_gitee_and_github.git' 
