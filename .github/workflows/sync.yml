@@ -1,0 +1,48 @@
+name: Sync to Gitee
+
+# 触发条件：当代码推送到 main 分支时自动运行
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 第一步：拉取代码
+      # 注意：这里不要配置 ssh-key，使用默认的 HTTPS 方式拉取
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      # 第二步：配置 Git 提交信息
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      # 第三步：添加 Gitee 的 SSH 主机指纹到 known_hosts
+      - name: Add Gitee SSH Host to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H gitee.com >> ~/.ssh/known_hosts
+
+      # 第四步：设置 SSH 私钥，用于推送到 Gitee
+      - name: Setup SSH Key for Gitee
+        run: |
+          mkdir -p ~/.ssh
+          # 将你仓库 Secrets 里的 GITEE_PRIVATE_KEY 写入到 id_rsa 文件
+          echo "${{ secrets.GITEE_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          # 设置正确的文件权限
+          chmod 600 ~/.ssh/id_rsa
+
+      # 第五步：推送到 Gitee
+      - name: Push to Gitee
+        run: |
+          # 将当前仓库的 origin 地址从 GitHub 的 HTTPS 地址，改为 Gitee 的 SSH 地址
+          git remote set-url origin git@gitee.com:jingyisi/jingyisi-my-project.git
+          # 强制推送到 Gitee 的 main 分支
+          git push --force origin main
